@@ -1,72 +1,73 @@
 pipeline {
     agent any
 
-    environment {
-        // Pass new version from Jenkins parameter or calculate dynamically
-        NEW_VERSION = "${params.APP_VERSION}"
-    }
-
     parameters {
         string(name: 'APP_VERSION', defaultValue: '1.0.0', description: 'New version to set in all chart.yaml files')
+    }
+
+    environment {
+        // Pass new version from Jenkins parameter or calculate dynamicallY
+        NEW_VERSION = "${params.APP_VERSION}"
     }
 
     stages {
 
         stage('Checkout') {
-    steps {
-        checkout([
-            $class: 'GitSCM',
-            branches: [[name: "*/main"]],
-            userRemoteConfigs: [[
-                url: 'https://github.com/vishaal99/azure.git',
-                credentialsId: 'github-creds'
-            ]]
-        ])
-    }
-}
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "*/main"]],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/vishaal99/azure.git',
+                        credentialsId: 'github-creds'
+                    ]]
+                ])
+            }
+        }
 
         stage('Update Helm chart versions') {
             steps {
                 script {
-
                     echo "Updating all chart.yaml files to version: ${NEW_VERSION}"
-
                     // Find every chart.yaml file under the repo and update version + appVersion
                     sh """
                     for file in \$(find . -name "Chart.yaml"); do
-                        echo "Updating: \$file"
-
-                        # Update version
-                        sed -i "s/^version: .*/version: ${NEW_VERSION}/" \$file
-
+                        echo "Updating \$file"
+                         # Update version
+                        sed -i "s/^version: .*/version: \${NEW_VERSION}/" \$file
                         # Update appVersion
-                        sed -i "s/^appVersion: .*/appVersion: \\"${NEW_VERSION}\\"/" \$file
+                        sed -i "s/^appVersion: .*/appVersion: \\"\${NEW_VERSION}\\"/" \$file
                     done
                     """
                 }
             }
         }
 
-        stage('Commit & Push Changes') {
+        stage('Commit & Push CHANGES') {
             steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'github-creds',
-                                    usernameVariable: 'GIT_USERNAME',
-                                    passwordVariable: 'GIT_PASSWORD')]) {
+                withCredentials([
+                    usernamePassword(credentialsId: 'github-creds',
+                                     usernameVariable: 'GIT_USERNAME',
+                                     passwordVariable: 'GIT_PASSWORD')
+                ]) {
 
-                      sh """
-                      git config user.email "jenkins@company.com"
-                      git config user.name "Jenkins CD"
+                    sh """
+                    git config user.email "jenkins@company.com"
+                    git config user.name "Jenkins CD"
 
-                      git add .
-                      git commit -m "CD: Update chart version to \${NEW_VERSION}" || echo "No changes to commit"
-
-                      # Push only if commit exists
-                      git push https://\${GIT_USERNAME}:\${GIT_PASSWORD}@github.com/vishaal99/azure.git HEAD:$(git rev-parse --abbrev-ref HEAD) || true
-                      """
-                    }
+                    git add .
+                    git commit -m "CD: Update chart version to \${NEW_VERSION}" || echo "No changes to commit"
+                    # Push only if commit exists
+                    git push https://\${GIT_USERNAME}:\${GIT_PASSWORD}@github.com/vishaal99/azure.git HEAD:\$(git rev-parse --abbrev-ref HEAD) || true
+                    """
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            echo "Pipeline finished."
         }
     }
 }
