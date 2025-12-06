@@ -33,14 +33,16 @@ pipeline {
             steps {
                 echo "updating"
                 script {
-                    echo "Updating all chart.yaml files to version: ${NEW_VERSION}"
+                    
                     // Find every chart.yaml file under the repo and update version + appVersion
                     sh """
                     for file in \$(find . -name "Chart.yaml"); do
                         echo "Updating \$file"
                          # Update version
+                         echo "Updating all chart.yaml files to version: \${NEW_VERSION}"
                         sed -i "s/^version: .*/version: \${NEW_VERSION}/" \$file
                         # Update appVersion
+                        echo "Updating all chart.yaml files to appversion: \${NEW_APP_VERSION}"
                         sed -i "s/^appVersion: .*/appVersion: \\"\${NEW_APP_VERSION}\\"/" \$file
                     done
                     """
