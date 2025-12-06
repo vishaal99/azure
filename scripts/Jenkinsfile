@@ -38,8 +38,8 @@ pipeline {
                     sh """
                     for file in \$(find . -name "Chart.yaml"); do
                         echo "Updating \$file"
-                         # Update version
-                         echo "Updating all chart.yaml files to version: \${NEW_VERSION}"
+                        # Update version
+                        echo "Updating all chart.yaml files to version: \${NEW_VERSION}"
                         sed -i "s/^version: .*/version: \${NEW_VERSION}/" \$file
                         # Update appVersion
                         echo "Updating all chart.yaml files to appversion: \${NEW_APP_VERSION}"
@@ -60,7 +60,7 @@ pipeline {
                     git config user.name "vishaal99"
                     git remote set-url origin https://vishaal99:\${GITHUB_PAT}@github.com/vishaal99/azure.git
                     git add .
-                    git commit -m "CD: Update chart version to \${NEW_VERSION}" || echo "No changes to commit"
+                    git commit -m "CD: Updated chart version to \${NEW_VERSION} and appVersion to \${NEW_APP_VERSION}" || echo "No changes to commit"
                     # Push only if commit exists
                     git push origin HEAD:refs/heads/main || true
                     """
