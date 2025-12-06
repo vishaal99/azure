@@ -45,20 +45,16 @@ pipeline {
 
         stage('Commit & Push CHANGES') {
             steps {
-                withCredentials([
-                    usernamePassword(credentialsId: 'github-creds',
-                                     usernameVariable: 'GIT_USERNAME',
-                                     passwordVariable: 'GIT_PASSWORD')
-                ]) {
+               withCredentials([string(credentialsId: 'github_pat', variable: 'GITHUB_PAT')]){
 
                     sh """
-                    git config user.email "jenkins@company.com"
-                    git config user.name "Jenkins CD"
-
+                    git config user.email "vishaalaadhityas@gmail.com"
+                    git config user.name "vishaal99"
+                    git remote set-url origin https://vishaal99:\${GITHUB_PAT}@github.com/vishaal99/azure.git
                     git add .
                     git commit -m "CD: Update chart version to \${NEW_VERSION}" || echo "No changes to commit"
                     # Push only if commit exists
-                    git push https://vishaal99:@github.com/vishaal99/azure.git HEAD:refs/heads/main || true
+                    git push origin HEAD:refs/heads/main || true
                     """
                 }
             }
