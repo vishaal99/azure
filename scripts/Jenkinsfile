@@ -58,7 +58,7 @@ pipeline {
                     git add .
                     git commit -m "CD: Update chart version to \${NEW_VERSION}" || echo "No changes to commit"
                     # Push only if commit exists
-                    git push https://\${GIT_USERNAME}:\${GIT_PASSWORD}@github.com/vishaal99/azure.git HEAD:\$(git rev-parse --abbrev-ref HEAD) || true
+                    git push https://\${GIT_USERNAME}:\${GIT_PASSWORD}@github.com/vishaal99/azure.git HEAD:refs/heads/\${BRANCH_NAME} || true
                     """
                 }
             }
