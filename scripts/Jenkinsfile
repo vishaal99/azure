@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'VERSION_TO_UPDATE', defaultValue: '1.0.0', description: 'New version to set in all chart.yaml files')
-        string(name: 'APP_VERSION_UPDATE', defaultValue: '1.0.0', description: 'New appVersion to set in all chart.yaml files')
+        string(name: 'VERSION_TO_UPDATE', description: 'New version to set in all chart.yaml files')
+        string(name: 'APP_VERSION_UPDATE', description: 'New appVersion to set in all chart.yaml files')
     }
 
     environment {
