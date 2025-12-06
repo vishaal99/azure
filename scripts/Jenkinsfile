@@ -17,6 +17,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
+                echo "Checkout"
                 checkout([
                     $class: 'GitSCM',
                     branches: [[name: "*/main"]],
@@ -30,6 +31,7 @@ pipeline {
 
         stage('Update Helm chart versions') {
             steps {
+                echo "updating"
                 script {
                     echo "Updating all chart.yaml files to version: ${NEW_VERSION}"
                     // Find every chart.yaml file under the repo and update version + appVersion
@@ -48,7 +50,8 @@ pipeline {
 
         stage('Commit & Push CHANGES') {
             steps {
-               withCredentials([string(credentialsId: 'github_pat', variable: 'GITHUB_PAT')]){
+                echo "pushing"
+                withCredentials([string(credentialsId: 'github_pat', variable: 'GITHUB_PAT')]){
 
                     sh """
                     git config user.email "vishaalaadhityas@gmail.com"
