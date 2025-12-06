@@ -50,16 +50,21 @@ pipeline {
         stage('Commit & Push Changes') {
             steps {
                 script {
-                    sh """
-                    git config user.email "jenkins@company.com"
-                    git config user.name "Jenkins CI"
+                    withCredentials([usernamePassword(credentialsId: 'github-creds',
+                                    usernameVariable: 'GIT_USERNAME',
+                                    passwordVariable: 'GIT_PASSWORD')]) {
 
-                    git add .
-                    git commit -m "CI: Update chart version to ${NEW_VERSION}" || echo "No changes to commit"
+                      sh """
+                      git config user.email "jenkins@company.com"
+                      git config user.name "Jenkins CD"
 
-                    # Push only if commit exists
-                    git push origin HEAD:\$(git rev-parse --abbrev-ref HEAD) || true
-                    """
+                      git add .
+                      git commit -m "CD: Update chart version to ${NEW_VERSION}" || echo "No changes to commit"
+
+                      # Push only if commit exists
+                      git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/vishaal99/azure.git HEAD:$(git rev-parse --abbrev-ref HEAD) || true
+                      """
+                    }
                 }
             }
         }
