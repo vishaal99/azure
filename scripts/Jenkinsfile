@@ -43,7 +43,8 @@ pipeline {
                         sed -i "s/^version: .*/version: \${NEW_VERSION}/" \$file
                         # Update appVersion
                         echo "Updating all chart.yaml files to appversion: \${NEW_APP_VERSION}"
-                        sed -i "s/^appVersion: .*/appVersion: \\"\${NEW_APP_VERSION}\\"/" \$file
+                        sed -i "s/^appVersion: .*/appVersion: \"\${NEW_APP_VERSION}\"/" \$file
+
                     done
                     """
                 }
