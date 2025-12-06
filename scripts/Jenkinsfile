@@ -1,1 +1,76 @@
-#hello
+pipeline {
+    agent any
+
+    environment {
+        // Pass new version from Jenkins parameter or calculate dynamically
+        NEW_VERSION = "${params.APP_VERSION}"
+    }
+
+    parameters {
+        string(name: 'APP_VERSION', defaultValue: '1.0.0', description: 'New version to set in all chart.yaml files')
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Update Helm chart versions') {
+            steps {
+                script {
+
+                    echo "Updating all chart.yaml files to version: ${NEW_VERSION}"
+
+                    // Find every chart.yaml file under the repo and update version + appVersion
+                    sh """
+                    for file in \$(find . -name "Chart.yaml"); do
+                        echo "Updating: \$file"
+
+                        # Update version
+                        sed -i "s/^version: .*/version: ${NEW_VERSION}/" \$file
+
+                        # Update appVersion
+                        sed -i "s/^appVersion: .*/appVersion: \\"${NEW_VERSION}\\"/" \$file
+                    done
+                    """
+                }
+            }
+        }
+
+        stage('Commit & Push Changes') {
+            steps {
+                script {
+                    sh """
+                    git config user.email "jenkins@company.com"
+                    git config user.name "Jenkins CI"
+
+                    git add .
+                    git commit -m "CI: Update chart version to ${NEW_VERSION}" || echo "No changes to commit"
+
+                    # Push only if commit exists
+                    git push origin HEAD:\$(git rev-parse --abbrev-ref HEAD) || true
+                    """
+                }
+            }
+        }
+
+        stage('Build & Deploy with Helm') {
+            steps {
+                script {
+                    // Example: Deployment step
+                    sh """
+                    echo "Deploying charts..."
+                    for chart in \$(find ./charts -maxdepth 1 -type d); do
+                        if [ -f "\$chart/Chart.yaml" ]; then
+                            helm upgrade --install \$(basename \$chart) \$chart --set image.tag=${NEW_VERSION}
+                        fi
+                    done
+                    """
+                }
+            }
+        }
+    }
+}
