@@ -41,7 +41,7 @@ pipeline {
                          # Update version
                         sed -i "s/^version: .*/version: \${NEW_VERSION}/" \$file
                         # Update appVersion
-                        sed -i "s/^appVersion: .*/appVersion: \\"\${NEW_VERSION}\\"/" \$file
+                        sed -i "s/^appVersion: .*/appVersion: \\"\${NEW_APP_VERSION}\\"/" \$file
                     done
                     """
                 }
