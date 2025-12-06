@@ -22,7 +22,7 @@ pipeline {
                     branches: [[name: "*/main"]],
                     userRemoteConfigs: [[
                         url: 'https://github.com/vishaal99/azure.git',
-                        credentialsId: 'github_pat'
+                        credentialsId: 'github-creds'
                     ]]
                 ])
             }
