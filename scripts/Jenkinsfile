@@ -57,20 +57,3 @@ pipeline {
             }
         }
 
-        stage('Build & Deploy with Helm') {
-            steps {
-                script {
-                    // Example: Deployment step
-                    sh """
-                    echo "Deploying charts..."
-                    for chart in \$(find ./charts -maxdepth 1 -type d); do
-                        if [ -f "\$chart/Chart.yaml" ]; then
-                            helm upgrade --install \$(basename \$chart) \$chart --set image.tag=${NEW_VERSION}
-                        fi
-                    done
-                    """
-                }
-            }
-        }
-    }
-}
