@@ -7,7 +7,9 @@ pipeline {
 
     environment {
         // Pass new version from Jenkins parameter or calculate dynamicallY
-        NEW_VERSION = "${params.APP_VERSION}"
+        NEW_VERSION = "${params.VERSION}"
+        NEW_APP_VERSION = "${params.APP_VERSION}"
+        
     }
 
     stages {
