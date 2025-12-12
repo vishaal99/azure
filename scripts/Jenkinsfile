@@ -34,7 +34,7 @@ pipeline {
                 echo "updating"
                 script {
                     
-                    // Find every chart.yaml file under the repo and update version 
+                    // Find every chart.yaml file under the repo and update version + appVersion
                     sh """
                     for file in \$(find . -name "Chart.yaml"); do
                         echo "Updating \$file"
@@ -43,24 +43,8 @@ pipeline {
                         sed -i "s/^version: .*/version: \${NEW_VERSION}/" \$file
                         # Update appVersion
                         echo "Updating all chart.yaml files to appversion: \${NEW_APP_VERSION}"
-                        for file in \$(find . -name "Chart.yaml"); do
-                         sed -i -E 's/^[[:space:]]*appVersion[[:space:]]*:[[:space:]]*\"?[^\"]*\"?/appVersion: "'"\${NEW_APP_VERSION}"'"'/g' "\$file"
-                    done
-                    """
-                }
-            }
-        }
-        stage('Update Helm chart appVersions') {
-            steps {
-                echo "updating"
-                script {
-                    
-                    // Find every chart.yaml file under the repo and update appVersion
-                    sh """
-                    for file in \$(find . -name "Chart.yaml"); do
-                        # Update appVersion
-                        echo "Updating all chart.yaml files to appversion: \${NEW_APP_VERSION}"
-                        sed -i -E "s#^[[:space:]]*appVersion[[:space:]]*:[[:space:]]*(\\"[^\\"]*\\"|[^[:space:]]*)#appVersion: \\"\${NEW_APP_VERSION}\\"#" "\$file"
+                        sed -i -E "s/^[[:space:]]*appVersion[[:space:]]*:[[:space:]]*.*/appVersion: \"\${NEW_APP_VERSION}\"/" "\$file"
+
                     done
                     """
                 }
