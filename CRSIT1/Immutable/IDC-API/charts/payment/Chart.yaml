@@ -2,5 +2,5 @@ apiVersion: v2
 name: auth
 description: Helm chart for idc-payment-api
 type: application
-version: 3.0.0
+version: 5.0.0.0
 appVersion : "24.4.5.0"
