@@ -43,8 +43,8 @@ pipeline {
                         sed -i "s/^version: .*/version: \${NEW_VERSION}/" \$file
                         # Update appVersion
                         echo "Updating all chart.yaml files to appversion: \${NEW_APP_VERSION}"
-                        sed -i -E "s/^[[:space:]]*appVersion[[:space:]]*:[[:space:]]*\"?[^\"]*\"?/appVersion: \"\${NEW_APP_VERSION}\"/" "\$file"
-
+                        for file in \$(find . -name "Chart.yaml"); do
+                         sed -i -E 's/^[[:space:]]*appVersion[[:space:]]*:[[:space:]]*\"?[^\"]*\"?/appVersion: "'"\${NEW_APP_VERSION}"'"'/g' "\$file"
                     done
                     """
                 }
