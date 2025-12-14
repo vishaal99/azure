@@ -35,17 +35,27 @@ pipeline {
                 echo "updating"
                 script {
                     
+                    
                     // Find every chart.yaml file under the repo and update version + appVersion
                     sh """
-                    for file in \$(find . -name "Chart.yaml"); do
-                        echo "Updating \$file"
-                        # Update version
-                        echo "Updating all chart.yaml files to version: \${NEW_VERSION}"
-                        sed -i "s/^version: .*/version: \${NEW_VERSION}/" \$file
-                        # Update appVersion
-                        echo "Updating all chart.yaml files to appversion: \${NEW_APP_VERSION}"
-                        sed -i -E "s/^[[:space:]]*appVersion[[:space:]]*:[[:space:]]*.*/appVersion: \"\${NEW_APP_VERSION}\"/" "\$file"
+                    set -e
+                    echo "Reading services from \${SERVICE_LIST_FILE}"
 
+                    # Extract service paths from YAML
+                    SERVICES=\$(yq e '.services[]' \${SERVICE_LIST_FILE})
+                    for service in \$SERVICES; do
+                        CHART_FILE="\$service/Chart.yaml"
+                        if [ -f "\$CHART_FILE" ]; then
+                            echo "Updating \$CHART_FILE"
+                            # Update version
+                            echo "Updating all chart.yaml files to version: \${NEW_VERSION}"
+                            sed -i "s/^version:.*/version: \${NEW_VERSION}/" "\$CHART_FILE"
+                            # Update appVersion
+                            echo "Updating all chart.yaml files to appversion: \${NEW_APP_VERSION}"
+                            sed -i -E "s/^[[:space:]]*appVersion[[:space:]]*:[[:space:]]*.*/appVersion: \"\${NEW_APP_VERSION}\"/" "\$CHART_FILE"
+                        else
+                            echo "WARNING: \$CHART_FILE not found"
+                        fi
                     done
                     """
                 }
