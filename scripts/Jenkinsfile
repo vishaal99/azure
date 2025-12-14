@@ -4,6 +4,7 @@ pipeline {
     parameters {
         string(name: 'VERSION_TO_UPDATE', description: 'New version to set in all chart.yaml files')
         string(name: 'APP_VERSION_UPDATE', description: 'New appVersion to set in all chart.yaml files')
+        string(name: 'SERVICE_LIST_FILE', defaultValue: 'charts-to-update.yaml', description: 'YAML file containing services to update')
     }
 
     environment {
