@@ -41,8 +41,7 @@ pipeline {
                     echo "Reading services from \${SERVICE_LIST_FILE}"
 
                     # Extract service paths from YAML
-                    SERVICES=$(yq eval '.services[]' "\${SERVICE_LIST_FILE}")
-
+                    SERVICES="\$(yq eval '.services[]' \${SERVICE_LIST_FILE})"
                     for service in \$SERVICES; do
                         CHART_FILE="\$service/Chart.yaml"
                         if [ -f "\$CHART_FILE" ]; then
